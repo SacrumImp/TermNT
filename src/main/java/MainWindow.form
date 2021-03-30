@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="MainWindow">
-  <grid id="27dc6" binding="formBlock" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="formBlock" layout-manager="GridLayoutManager" row-count="9" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="15" left="15" bottom="15" right="15"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="333"/>
+      <xy x="20" y="20" width="508" height="348"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -18,13 +18,14 @@
       </component>
       <component id="a376e" class="javax.swing.JTextField" binding="textFieldName">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
         <properties>
           <enabled value="true"/>
-          <toolTipText value="Введите имч пользователя"/>
+          <text value=""/>
+          <toolTipText value=""/>
         </properties>
       </component>
       <component id="64c18" class="javax.swing.JLabel" binding="labelCOMPort">
@@ -37,13 +38,13 @@
       </component>
       <component id="a74d1" class="javax.swing.JComboBox" binding="comboBoxPort">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
       <component id="68a90" class="javax.swing.JComboBox" binding="comboBoxSpeed">
         <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
@@ -65,7 +66,7 @@
       </component>
       <component id="dc100" class="javax.swing.JComboBox" binding="comboBoxBits">
         <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
@@ -79,7 +80,7 @@
       </component>
       <component id="6c84d" class="javax.swing.JComboBox" binding="comboBoxStopBits">
         <constraints>
-          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
@@ -88,18 +89,18 @@
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Чётность"/>
+          <text value="Проверка на чётность"/>
         </properties>
       </component>
       <component id="f5cea" class="javax.swing.JComboBox" binding="comboBoxParity">
         <constraints>
-          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
       <component id="351b7" class="javax.swing.JLabel" binding="status">
         <constraints>
-          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <foreground color="-4521984"/>
@@ -108,27 +109,35 @@
       </component>
       <component id="e20d0" class="javax.swing.JLabel" binding="labelStatus">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Статус подключения:"/>
         </properties>
       </component>
-      <component id="6bdb8" class="javax.swing.JButton" binding="buttonConnect">
+      <component id="616d2" class="javax.swing.JButton" binding="buttonOpenChat">
         <constraints>
-          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Открыть окно чата"/>
+        </properties>
+      </component>
+      <component id="69619" class="javax.swing.JButton" binding="buttonConnect">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Установить соединение"/>
         </properties>
       </component>
-      <component id="616d2" class="javax.swing.JButton" binding="buttonOpenChat">
+      <component id="b97ab" class="javax.swing.JButton" binding="buttonDisconnect">
         <constraints>
-          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <enabled value="false"/>
-          <text value="Открыть окно чата"/>
+          <text value="Разъединить"/>
         </properties>
       </component>
     </children>

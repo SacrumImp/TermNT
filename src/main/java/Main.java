@@ -10,9 +10,6 @@ public class Main {
         mainWindow.pack();
         mainWindow.setSize(new Dimension(500, 400));
         mainWindow.setVisible(true);
-
-        SerialPort[] ports = SerialPort.getCommPorts();
-        mainWindow.setPortNames(ports);
     }
 
 
