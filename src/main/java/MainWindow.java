@@ -1,6 +1,7 @@
 import com.fazecast.jSerialComm.SerialPort;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -54,6 +55,20 @@ public class MainWindow extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 SerialPort port = ports[comboBoxPort.getSelectedIndex()];
                 port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
+                blockingInterface(false);
+                port.openPort();
+
+                //открытие окна для отправления сообщений
+                SendText sendText = new SendText();
+                sendText.setTitle("Исходящие");
+                sendText.pack();
+                sendText.setVisible(true);
+
+                //открытие окна для получения сообщений
+                RecievedText recievedText = new RecievedText();
+                recievedText.setTitle("Входящие");
+                recievedText.pack();
+                recievedText.setVisible(true);
             }
         });
 
@@ -61,9 +76,19 @@ public class MainWindow extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 SerialPort port = ports[comboBoxPort.getSelectedIndex()];
-                System.out.println(port.getNumDataBits());
+                port.closePort();
+                blockingInterface(true);
             }
         });
+    }
+
+    public void blockingInterface(boolean key){
+        this.textFieldName.setEnabled(key);
+        this.comboBoxPort.setEnabled(key);
+        this.comboBoxSpeed.setEnabled(key);
+        this.comboBoxBits.setEnabled(key);
+        this.comboBoxStopBits.setEnabled(key);
+        this.comboBoxParity.setEnabled(key);
     }
 
 }
