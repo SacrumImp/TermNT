@@ -25,6 +25,7 @@ public class MainWindow extends JFrame{
     private JButton buttonConnect;
     private JButton buttonOpenChat;
     private JButton buttonDisconnect;
+    private JButton paramButton;
 
     public MainWindow() {
         this.getContentPane().add(formBlock);
