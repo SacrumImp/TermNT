@@ -55,57 +55,45 @@ public class MainWindow extends JFrame{
         for (String param : parity)
             this.comboBoxParity.addItem(param);
 
-        this.buttonConnect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                port = ports[comboBoxPort.getSelectedIndex()];
-                port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
-                blockingInterface(false);
+        this.buttonConnect.addActionListener(e -> {
+            port = ports[comboBoxPort.getSelectedIndex()];
+            port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
+            blockingInterface(false);
 
-                //открытие COM-порта и установка сигнала DTR
-                port.openPort();
-                port.setDTR();
+            //открытие COM-порта и установка сигнала DTR
+            port.openPort();
+            port.setDTR();
 
-                //старт потока для установки физического и логического соединения
-                ConnectionThread connectionThread = new ConnectionThread();
-                Thread thread = new Thread(connectionThread);
-                thread.start();
+            //старт потока для установки физического и логического соединения
+            ConnectionThread connectionThread = new ConnectionThread();
+            Thread thread = new Thread(connectionThread);
+            thread.start();
 
-            }
         });
 
-        this.buttonDisconnect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                port = ports[comboBoxPort.getSelectedIndex()];
-                port.closePort();
-                blockingInterface(true);
+        this.buttonDisconnect.addActionListener(e -> {
+            port = ports[comboBoxPort.getSelectedIndex()];
+            port.closePort();
+            blockingInterface(true);
 
-            }
         });
 
-        this.buttonOpenChat.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //открытие окна для отправления сообщений
-                SendText sendText = new SendText();
-                sendText.setTitle("Исходящие");
-                sendText.pack();
-                sendText.setVisible(true);
+        this.buttonOpenChat.addActionListener(e -> {
+            //открытие окна для отправления сообщений
+            SendText sendText = new SendText();
+            sendText.setTitle("Исходящие");
+            sendText.pack();
+            sendText.setVisible(true);
 
-                //открытие окна для получения сообщений
-                RecievedText recievedText = new RecievedText();
-                recievedText.setTitle("Входящие");
-                recievedText.pack();
-                recievedText.setVisible(true);
-            }
+            //открытие окна для получения сообщений
+            RecievedText recievedText = new RecievedText();
+            recievedText.setTitle("Входящие");
+            recievedText.pack();
+            recievedText.setVisible(true);
         });
 
-        this.buttonParam.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        this.buttonParam.addActionListener(e -> {
 
-            }
         });
 
     }
@@ -124,7 +112,7 @@ public class MainWindow extends JFrame{
     {
         public void run()
         {
-            long end = System.currentTimeMillis() + 1000;
+            long end = System.currentTimeMillis() + 15000;
             while (System.currentTimeMillis() < end){
                 if (port.getDSR()){
                     
@@ -137,6 +125,7 @@ public class MainWindow extends JFrame{
                     return;
                 }
             }
+            comboBoxPort.setEnabled(true);
             port.closePort();
         }
     }
