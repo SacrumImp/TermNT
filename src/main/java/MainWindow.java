@@ -76,6 +76,9 @@ public class MainWindow extends JFrame{
             port.closePort();
             blockingInterface(true);
 
+            status.setText("Отключено");
+            status.setForeground(Color.RED);
+
         });
 
         this.buttonOpenChat.addActionListener(e -> {
@@ -115,7 +118,7 @@ public class MainWindow extends JFrame{
             long end = System.currentTimeMillis() + 15000;
             while (System.currentTimeMillis() < end){
                 if (port.getDSR()){
-                    
+
 
                     status.setText("Подключено");
                     status.setForeground(VERY_DARK_GREEN);
