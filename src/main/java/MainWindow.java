@@ -25,7 +25,11 @@ public class MainWindow extends JFrame{
     private JButton buttonConnect;
     private JButton buttonOpenChat;
     private JButton buttonDisconnect;
-    private JButton paramButton;
+    private JButton buttonParam;
+
+    public static final Color VERY_DARK_GREEN = new Color(0, 102, 0);
+
+    SerialPort port;
 
     public MainWindow() {
         this.getContentPane().add(formBlock);
@@ -54,11 +58,35 @@ public class MainWindow extends JFrame{
         this.buttonConnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SerialPort port = ports[comboBoxPort.getSelectedIndex()];
+                port = ports[comboBoxPort.getSelectedIndex()];
                 port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
                 blockingInterface(false);
-                port.openPort();
 
+                //открытие COM-порта и установка сигнала DTR
+                port.openPort();
+                port.setDTR();
+
+                //старт потока для установки физического и логического соединения
+                ConnectionThread connectionThread = new ConnectionThread();
+                Thread thread = new Thread(connectionThread);
+                thread.start();
+
+            }
+        });
+
+        this.buttonDisconnect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                port = ports[comboBoxPort.getSelectedIndex()];
+                port.closePort();
+                blockingInterface(true);
+
+            }
+        });
+
+        this.buttonOpenChat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 //открытие окна для отправления сообщений
                 SendText sendText = new SendText();
                 sendText.setTitle("Исходящие");
@@ -73,16 +101,16 @@ public class MainWindow extends JFrame{
             }
         });
 
-        this.buttonDisconnect.addActionListener(new ActionListener() {
+        this.buttonParam.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SerialPort port = ports[comboBoxPort.getSelectedIndex()];
-                port.closePort();
-                blockingInterface(true);
+
             }
         });
+
     }
 
+    //функция для блокировки интерфейса при установленном соединении
     public void blockingInterface(boolean key){
         this.textFieldName.setEnabled(key);
         this.comboBoxPort.setEnabled(key);
@@ -90,6 +118,27 @@ public class MainWindow extends JFrame{
         this.comboBoxBits.setEnabled(key);
         this.comboBoxStopBits.setEnabled(key);
         this.comboBoxParity.setEnabled(key);
+    }
+
+    class ConnectionThread implements Runnable
+    {
+        public void run()
+        {
+            long end = System.currentTimeMillis() + 1000;
+            while (System.currentTimeMillis() < end){
+                if (port.getDSR()){
+                    
+
+                    status.setText("Подключено");
+                    status.setForeground(VERY_DARK_GREEN);
+
+                    buttonOpenChat.setEnabled(true);
+
+                    return;
+                }
+            }
+            port.closePort();
+        }
     }
 
 }
