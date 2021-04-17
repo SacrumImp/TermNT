@@ -2,8 +2,6 @@ import com.fazecast.jSerialComm.SerialPort;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame{
 
@@ -29,52 +27,43 @@ public class MainWindow extends JFrame{
 
     public static final Color VERY_DARK_GREEN = new Color(0, 102, 0);
 
+    SerialPort[] ports;
     SerialPort port;
 
     public MainWindow() {
         this.getContentPane().add(formBlock);
 
-        SerialPort[] ports = SerialPort.getCommPorts();
-        for (SerialPort port : ports) {
-            this.comboBoxPort.addItem(port.getPortDescription());
-        }
+        ports = SerialPort.getCommPorts();
+        this.configureUI();
 
-        int[] baud = {9600};
-        for (int param : baud)
-            this.comboBoxSpeed.addItem(param);
+        //этам установки физического соединения
+        this.comboBoxPort.addActionListener(e -> {
+            this.comboBoxPort.setEnabled(false);
+            int ind = comboBoxPort.getSelectedIndex() - 1;
 
-        int[] dataBits = {8, 7, 6, 5};
-        for (int param : dataBits)
-            this.comboBoxBits.addItem(param);
+            if(ind < 0) return;
 
-        String[] stopBits = {"1", "1,5", "2"};
-        for(String param : stopBits)
-            this.comboBoxStopBits.addItem(param);
-
-        String[] parity = {"Нет", "Да"};
-        for (String param : parity)
-            this.comboBoxParity.addItem(param);
-
-        this.buttonConnect.addActionListener(e -> {
-            port = ports[comboBoxPort.getSelectedIndex()];
-            port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
-            blockingInterface(false);
+            port = ports[ind];
 
             //открытие COM-порта и установка сигнала DTR
             port.openPort();
             port.setDTR();
 
-            //старт потока для установки физического и логического соединения
-            ConnectionThread connectionThread = new ConnectionThread();
-            Thread thread = new Thread(connectionThread);
+            //старт потока для установки физического соединения
+            PhysicalConnectionThread physicalConnectionThread = new PhysicalConnectionThread();
+            Thread thread = new Thread(physicalConnectionThread);
             thread.start();
+        });
+
+        this.buttonConnect.addActionListener(e -> {
+            //port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
+
 
         });
 
         this.buttonDisconnect.addActionListener(e -> {
             port = ports[comboBoxPort.getSelectedIndex()];
             port.closePort();
-            blockingInterface(true);
 
             status.setText("Отключено");
             status.setForeground(Color.RED);
@@ -101,33 +90,42 @@ public class MainWindow extends JFrame{
 
     }
 
-    //функция для блокировки интерфейса при установленном соединении
-    public void blockingInterface(boolean key){
-        this.textFieldName.setEnabled(key);
-        this.comboBoxPort.setEnabled(key);
-        this.comboBoxSpeed.setEnabled(key);
-        this.comboBoxBits.setEnabled(key);
-        this.comboBoxStopBits.setEnabled(key);
-        this.comboBoxParity.setEnabled(key);
+    public void configureUI(){
+
+        this.comboBoxPort.addItem("Порт не выбран");
+        for (SerialPort port : ports) {
+            this.comboBoxPort.addItem(port.getPortDescription());
+        }
+
+        int[] baud = {9600};
+        for (int param : baud)
+            this.comboBoxSpeed.addItem(param);
+
+        int[] dataBits = {8, 7, 6, 5};
+        for (int param : dataBits)
+            this.comboBoxBits.addItem(param);
+
+        String[] stopBits = {"1", "1,5", "2"};
+        for(String param : stopBits)
+            this.comboBoxStopBits.addItem(param);
+
+        String[] parity = {"Нет", "Да"};
+        for (String param : parity)
+            this.comboBoxParity.addItem(param);
     }
 
-    class ConnectionThread implements Runnable
+    class PhysicalConnectionThread implements Runnable
     {
         public void run()
         {
             long end = System.currentTimeMillis() + 15000;
             while (System.currentTimeMillis() < end){
                 if (port.getDSR()){
-
-
-                    status.setText("Подключено");
-                    status.setForeground(VERY_DARK_GREEN);
-
-                    buttonOpenChat.setEnabled(true);
-
+                    buttonConnect.setEnabled(true);
                     return;
                 }
             }
+            comboBoxPort.setSelectedIndex(0);
             comboBoxPort.setEnabled(true);
             port.closePort();
         }
