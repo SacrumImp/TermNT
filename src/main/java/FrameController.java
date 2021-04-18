@@ -24,7 +24,7 @@ public class FrameController {
     }
 
     public boolean setPhysicalConnection(){
-        long end = System.currentTimeMillis() + 15000;
+        long end = System.currentTimeMillis() + 5000;
         while (System.currentTimeMillis() < end){
             if (port.getDSR()){
                 port.addDataListener(new SerialPortDataListener() {
@@ -39,10 +39,7 @@ public class FrameController {
                             return;
                         byte[] newData = new byte[port.bytesAvailable()];
                         port.readBytes(newData, newData.length);
-                        for(byte bites : newData){
-                            System.out.println(bites);
-                        }
-
+                        processFrame(newData);
                     }
                 });
                 return true;
@@ -52,7 +49,7 @@ public class FrameController {
         return false;
     }
 
-    public void sendLogicalConnection(){
+    public void setLogicalConnection(){
         Frame connectionFrame = new Frame(FrameTypes.LINK);
         port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
                 connectionFrame.getFrameSize());
@@ -60,6 +57,21 @@ public class FrameController {
 
     public void setComPortParams(){
         //port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
+    }
+
+    private void processFrame(byte[] data){
+        Frame frame = new Frame(data);
+        switch(frame.getType()){
+            case LINK:
+                System.out.println("LINK");
+                Frame connectionFrame = new Frame(FrameTypes.LINK);
+                port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
+                        connectionFrame.getFrameSize());
+                break;
+            case ACK:
+                System.out.println("ACK");
+                break;
+        }
     }
 
 }

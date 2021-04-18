@@ -51,7 +51,7 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonConnect.addActionListener(e -> {
-            this.controller.sendLogicalConnection();
+            this.controller.setLogicalConnection();
             //status.setText("Подключено");
             //status.setForeground(VERY_DARK_GREEN);
         });
@@ -111,7 +111,8 @@ public class MainWindow extends JFrame{
     class PhysicalConnectionThread implements Runnable {
         @Override
         public void run() {
-            if (controller.setPhysicalConnection()){
+            boolean result = controller.setPhysicalConnection();
+            if (result){
                 buttonConnect.setEnabled(true);
             }
             else{
