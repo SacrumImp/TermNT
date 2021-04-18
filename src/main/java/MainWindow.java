@@ -1,6 +1,4 @@
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
-import com.fazecast.jSerialComm.SerialPortEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,13 +27,13 @@ public class MainWindow extends JFrame{
 
     public static final Color VERY_DARK_GREEN = new Color(0, 102, 0);
 
-    SerialPort[] ports;
-    SerialPort port;
+    FrameController controller;
 
     public MainWindow() {
         this.getContentPane().add(formBlock);
 
-        ports = SerialPort.getCommPorts();
+        this.controller = new FrameController();
+
         this.configureUI();
 
         //этам установки физического соединения
@@ -45,12 +43,7 @@ public class MainWindow extends JFrame{
 
             if(ind < 0) return;
 
-            port = ports[ind];
-
-            //открытие COM-порта и установка сигнала DTR
-            port.openPort();
-            port.setDTR();
-
+            this.controller.setPort(ind);
             //старт потока для установки физического соединения
             PhysicalConnectionThread physicalConnectionThread = new PhysicalConnectionThread();
             Thread thread = new Thread(physicalConnectionThread);
@@ -58,17 +51,12 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonConnect.addActionListener(e -> {
-            //port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
+            this.controller.sendLogicalConnection();
             //status.setText("Подключено");
             //status.setForeground(VERY_DARK_GREEN);
-            Frame connectionFrame = new Frame(FrameTypes.LINK);
-            port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
-                    connectionFrame.getFrameSize());
         });
 
         this.buttonDisconnect.addActionListener(e -> {
-            port = ports[comboBoxPort.getSelectedIndex()];
-            port.closePort();
 
             status.setText("Отключено");
             status.setForeground(Color.RED);
@@ -98,7 +86,7 @@ public class MainWindow extends JFrame{
     public void configureUI(){
 
         this.comboBoxPort.addItem("Порт не выбран");
-        for (SerialPort port : ports) {
+        for (SerialPort port : this.controller.getPorts()) {
             this.comboBoxPort.addItem(port.getPortDescription());
         }
 
@@ -123,34 +111,13 @@ public class MainWindow extends JFrame{
     class PhysicalConnectionThread implements Runnable {
         @Override
         public void run() {
-            long end = System.currentTimeMillis() + 15000;
-            while (System.currentTimeMillis() < end){
-                if (port.getDSR()){
-                    buttonConnect.setEnabled(true);
-                    port.addDataListener(new SerialPortDataListener() {
-                        @Override
-                        public int getListeningEvents() {
-                            return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
-                        }
-
-                        @Override
-                        public void serialEvent(SerialPortEvent serialPortEvent) {
-                            if (serialPortEvent.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-                                return;
-                            byte[] newData = new byte[port.bytesAvailable()];
-                            port.readBytes(newData, newData.length);
-                            for(byte bites : newData){
-                                System.out.println(bites);
-                            }
-
-                        }
-                    });
-                    return;
-                }
+            if (controller.setPhysicalConnection()){
+                buttonConnect.setEnabled(true);
             }
-            comboBoxPort.setSelectedIndex(0);
-            comboBoxPort.setEnabled(true);
-            port.closePort();
+            else{
+                comboBoxPort.setSelectedIndex(0);
+                comboBoxPort.setEnabled(true);
+            }
         }
     }
 
