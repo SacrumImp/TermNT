@@ -1,4 +1,6 @@
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,8 +59,11 @@ public class MainWindow extends JFrame{
 
         this.buttonConnect.addActionListener(e -> {
             //port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
-
-
+            //status.setText("Подключено");
+            //status.setForeground(VERY_DARK_GREEN);
+            Frame connectionFrame = new Frame(FrameTypes.LINK);
+            port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
+                    connectionFrame.getFrameSize());
         });
 
         this.buttonDisconnect.addActionListener(e -> {
@@ -114,14 +119,32 @@ public class MainWindow extends JFrame{
             this.comboBoxParity.addItem(param);
     }
 
-    class PhysicalConnectionThread implements Runnable
-    {
-        public void run()
-        {
+    //Поток физического соединения
+    class PhysicalConnectionThread implements Runnable {
+        @Override
+        public void run() {
             long end = System.currentTimeMillis() + 15000;
             while (System.currentTimeMillis() < end){
                 if (port.getDSR()){
                     buttonConnect.setEnabled(true);
+                    port.addDataListener(new SerialPortDataListener() {
+                        @Override
+                        public int getListeningEvents() {
+                            return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+                        }
+
+                        @Override
+                        public void serialEvent(SerialPortEvent serialPortEvent) {
+                            if (serialPortEvent.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+                                return;
+                            byte[] newData = new byte[port.bytesAvailable()];
+                            port.readBytes(newData, newData.length);
+                            for(byte bites : newData){
+                                System.out.println(bites);
+                            }
+
+                        }
+                    });
                     return;
                 }
             }
