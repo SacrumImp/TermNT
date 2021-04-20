@@ -5,7 +5,13 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 public class FrameController {
 
     private SerialPort[] ports;
+
+    //все последующие поля следует обнулять
     private SerialPort port = null;
+    private String userName = "";
+    private String connectedName = "";
+    //флаги
+    private int sendLogicalConnect = 0;
 
     public FrameController(){
         ports = SerialPort.getCommPorts();
@@ -20,7 +26,13 @@ public class FrameController {
     }
 
     public SerialPort[] getPorts(){
-        return ports;
+        return this.ports;
+    }
+
+    public String getConnectedName() { return this.connectedName; }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public boolean setPhysicalConnection(){
@@ -53,24 +65,30 @@ public class FrameController {
         Frame connectionFrame = new Frame(FrameTypes.LINK);
         port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
                 connectionFrame.getFrameSize());
+        this.sendLogicalConnect = 1;
     }
 
     public void setComPortParams(){
         //port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
     }
 
-    private void processFrame(byte[] data){
+    private String processFrame(byte[] data){
         Frame frame = new Frame(data);
         switch(frame.getType()){
             case LINK:
                 System.out.println("LINK");
-                Frame connectionFrame = new Frame(FrameTypes.LINK);
-                port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
-                        connectionFrame.getFrameSize());
-                break;
+                this.connectedName = frame.getDataString();
+                if (this.sendLogicalConnect == 0){
+                    Frame connectionFrame = new Frame(FrameTypes.LINK);
+                    port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
+                            connectionFrame.getFrameSize());
+                }
+                return "Подключено";
             case ACK:
                 System.out.println("ACK");
-                break;
+                return "";
+            default:
+                return "";
         }
     }
 

@@ -51,9 +51,9 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonConnect.addActionListener(e -> {
+            this.controller.setUserName(this.textFieldName.getText());
+            this.textFieldName.setEnabled(false);
             this.controller.setLogicalConnection();
-            //status.setText("Подключено");
-            //status.setForeground(VERY_DARK_GREEN);
         });
 
         this.buttonDisconnect.addActionListener(e -> {
