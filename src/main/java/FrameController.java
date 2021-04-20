@@ -5,6 +5,7 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 public class FrameController {
 
     private SerialPort[] ports;
+    private MainWindowUI mainWindowUI;
 
     //все последующие поля следует обнулять
     private SerialPort port = null;
@@ -34,6 +35,8 @@ public class FrameController {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+    public void setMainWindowUIInterface(MainWindowUI uiInterface){ this.mainWindowUI = uiInterface; }
 
     public boolean setPhysicalConnection(){
         long end = System.currentTimeMillis() + 5000;
@@ -78,6 +81,7 @@ public class FrameController {
             case LINK:
                 System.out.println("LINK");
                 this.connectedName = frame.getDataString();
+                mainWindowUI.changeLogicalConnectLabel();
                 if (this.sendLogicalConnect == 0){
                     Frame connectionFrame = new Frame(FrameTypes.LINK);
                     port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),

@@ -29,10 +29,18 @@ public class MainWindow extends JFrame{
 
     FrameController controller;
 
-    public MainWindow() {
+    public MainWindow(){
         this.getContentPane().add(formBlock);
 
         this.controller = new FrameController();
+
+        this.controller.setMainWindowUIInterface(new MainWindowUI() {
+            @Override
+            public void changeLogicalConnectLabel() {
+                status.setText("Подключено");
+                status.setForeground(VERY_DARK_GREEN);
+            }
+        });
 
         this.configureUI();
 
