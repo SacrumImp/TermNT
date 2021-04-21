@@ -2,7 +2,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
-public class FrameController {
+public class FrameViewModel {
 
     private SerialPort[] ports;
     private MainWindowUI mainWindowUI;
@@ -14,7 +14,7 @@ public class FrameController {
     //флаги
     private int sendLogicalConnect = 0;
 
-    public FrameController(){
+    public FrameViewModel(){
         ports = SerialPort.getCommPorts();
     }
 

@@ -27,31 +27,33 @@ public class MainWindow extends JFrame{
 
     public static final Color VERY_DARK_GREEN = new Color(0, 102, 0);
 
-    FrameController controller;
+    FrameViewModel viewModel;
 
     public MainWindow(){
         this.getContentPane().add(formBlock);
 
-        this.controller = new FrameController();
+        this.viewModel = new FrameViewModel();
 
-        this.controller.setMainWindowUIInterface(new MainWindowUI() {
+        this.viewModel.setMainWindowUIInterface(new MainWindowUI() {
             @Override
             public void changeLogicalConnectLabel() {
                 status.setText("Подключено");
                 status.setForeground(VERY_DARK_GREEN);
+                buttonOpenChat.setEnabled(true);
+                textFieldName.setEnabled(false);
             }
         });
 
         this.configureUI();
 
-        //этам установки физического соединения
+        //этап установки физического соединения
         this.comboBoxPort.addActionListener(e -> {
             this.comboBoxPort.setEnabled(false);
             int ind = comboBoxPort.getSelectedIndex() - 1;
 
             if(ind < 0) return;
 
-            this.controller.setPort(ind);
+            this.viewModel.setPort(ind);
             //старт потока для установки физического соединения
             PhysicalConnectionThread physicalConnectionThread = new PhysicalConnectionThread();
             Thread thread = new Thread(physicalConnectionThread);
@@ -59,9 +61,8 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonConnect.addActionListener(e -> {
-            this.controller.setUserName(this.textFieldName.getText());
-            this.textFieldName.setEnabled(false);
-            this.controller.setLogicalConnection();
+            this.viewModel.setUserName(this.textFieldName.getText());
+            this.viewModel.setLogicalConnection();
         });
 
         this.buttonDisconnect.addActionListener(e -> {
@@ -94,7 +95,7 @@ public class MainWindow extends JFrame{
     public void configureUI(){
 
         this.comboBoxPort.addItem("Порт не выбран");
-        for (SerialPort port : this.controller.getPorts()) {
+        for (SerialPort port : this.viewModel.getPorts()) {
             this.comboBoxPort.addItem(port.getPortDescription());
         }
 
@@ -119,7 +120,7 @@ public class MainWindow extends JFrame{
     class PhysicalConnectionThread implements Runnable {
         @Override
         public void run() {
-            boolean result = controller.setPhysicalConnection();
+            boolean result = viewModel.setPhysicalConnection();
             if (result){
                 buttonConnect.setEnabled(true);
             }
