@@ -1,3 +1,5 @@
+import enums.FrameTypes;
+
 import java.util.Arrays;
 
 public class Frame {
@@ -10,6 +12,13 @@ public class Frame {
     public Frame(FrameTypes type){
         this.type = type;
         this.dataLength = 0;
+    }
+
+    public Frame(FrameTypes type, byte params){
+        this.type = type;
+        this.data = new byte[] {params};
+        this.dataLength = 1;
+        this.frameSize = 7;
     }
 
     public Frame(FrameTypes type, String data){
@@ -42,6 +51,10 @@ public class Frame {
         return this.type;
     }
 
+    public byte[] getData() {
+        return data;
+    }
+
     public byte[] getSupervisorFrameToWrite(){
         byte[] frame;
 
@@ -51,7 +64,8 @@ public class Frame {
         }
         else{
             frame = new byte[6 + dataLength];
-            this.frameSize = 6;
+            this.frameSize = 6 + dataLength;
+            frame[4] = dataLength;
         }
 
         frame[0] = 0;
@@ -59,6 +73,12 @@ public class Frame {
         frame[1] = -128;
         frame[2] = -128;
         frame[3] = type.getFrameCode();
+
+        for(int i = 0; i < dataLength; i++){
+            frame[i+5] = data[i];
+        }
+
+        System.out.println(frame);
 
         return  frame;
     }

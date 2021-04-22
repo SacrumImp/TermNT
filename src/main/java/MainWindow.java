@@ -1,4 +1,8 @@
 import com.fazecast.jSerialComm.SerialPort;
+import enums.Baud;
+import enums.DataBits;
+import enums.Parity;
+import enums.StopBits;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,6 +45,15 @@ public class MainWindow extends JFrame{
                 status.setForeground(VERY_DARK_GREEN);
                 buttonOpenChat.setEnabled(true);
                 textFieldName.setEnabled(false);
+                buttonParam.setEnabled(true);
+            }
+
+            @Override
+            public void changeComPortParams(int speed, int bits, int stopBits, int parity){
+                comboBoxSpeed.setSelectedIndex(speed);
+                comboBoxBits.setSelectedIndex(bits);
+                comboBoxStopBits.setSelectedIndex(stopBits);
+                comboBoxParity.setSelectedIndex(parity);
             }
         });
 
@@ -87,7 +100,9 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonParam.addActionListener(e -> {
-
+            System.out.println(comboBoxStopBits.getSelectedIndex());
+            viewModel.setComPortParams(comboBoxSpeed.getSelectedIndex(), comboBoxBits.getSelectedIndex(),
+                    comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
         });
 
     }
@@ -99,21 +114,17 @@ public class MainWindow extends JFrame{
             this.comboBoxPort.addItem(port.getPortDescription());
         }
 
-        int[] baud = {9600};
-        for (int param : baud)
-            this.comboBoxSpeed.addItem(param);
+        for (Baud param : Baud.values())
+            this.comboBoxSpeed.addItem(param.getSpeed());
 
-        int[] dataBits = {8, 7, 6, 5};
-        for (int param : dataBits)
-            this.comboBoxBits.addItem(param);
+        for (DataBits param : DataBits.values())
+            this.comboBoxBits.addItem(param.getBitsNum());
 
-        String[] stopBits = {"1", "1,5", "2"};
-        for(String param : stopBits)
-            this.comboBoxStopBits.addItem(param);
+        for(StopBits param : StopBits.values())
+            this.comboBoxStopBits.addItem(param.getStopBits());
 
-        String[] parity = {"Нет", "Да"};
-        for (String param : parity)
-            this.comboBoxParity.addItem(param);
+        for (Parity param : Parity.values())
+            this.comboBoxParity.addItem(param.getStatus());
     }
 
     //Поток физического соединения

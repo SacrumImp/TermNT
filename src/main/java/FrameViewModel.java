@@ -1,6 +1,9 @@
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import enums.Baud;
+import enums.DataBits;
+import enums.FrameTypes;
 
 public class FrameViewModel {
 
@@ -71,12 +74,9 @@ public class FrameViewModel {
         this.sendLogicalConnect = 1;
     }
 
-    public void setComPortParams(){
-        //port.setComPortParameters((int)comboBoxSpeed.getSelectedItem(), (int)comboBoxBits.getSelectedItem(), comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
-    }
-
     private String processFrame(byte[] data){
         Frame frame = new Frame(data);
+        System.out.println(frame.getType());
         switch(frame.getType()){
             case LINK:
                 System.out.println("LINK");
@@ -91,9 +91,43 @@ public class FrameViewModel {
             case ACK:
                 System.out.println("ACK");
                 return "";
+            case PRM:
+                System.out.println("PRM");
+                getComPortParams(frame);
+                return "";
             default:
                 return "";
         }
+    }
+
+    public void setComPortParams(int speed, int bits, int stopBits, int parity){
+        port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
+
+        int params = 0;
+        params = (params | speed) << 2;
+        params = (params | bits) << 2;
+        params = (params | stopBits) << 1;
+        params = params | parity;
+
+        Frame frame = new Frame(FrameTypes.PRM, (byte)params);
+        port.writeBytes(frame.getSupervisorFrameToWrite(),
+                frame.getFrameSize());
+
+    }
+
+    public void getComPortParams(Frame frame){
+        int params = frame.getData()[0];
+
+        System.out.println(params);
+
+        int parity = params & 1;
+        int stopBits = (params & 6) >> 1;
+        int bits = (params & 24) >> 3;
+        int speed = (params & 224) >> 5;
+
+        port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
+        mainWindowUI.changeComPortParams(speed, bits, stopBits, parity);
+
     }
 
 }
