@@ -1,3 +1,5 @@
+package Models;
+
 import enums.FrameTypes;
 
 import java.util.Arrays;
@@ -77,8 +79,6 @@ public class Frame {
         for(int i = 0; i < dataLength; i++){
             frame[i+5] = data[i];
         }
-
-        System.out.println(frame);
 
         return  frame;
     }

@@ -1,3 +1,7 @@
+package Views;
+
+import ViewModels.FrameViewModel;
+import ViewModels.MainWindowUI;
 import com.fazecast.jSerialComm.SerialPort;
 import enums.Baud;
 import enums.DataBits;
@@ -43,9 +47,13 @@ public class MainWindow extends JFrame{
             public void changeLogicalConnectLabel() {
                 status.setText("Подключено");
                 status.setForeground(VERY_DARK_GREEN);
+
                 buttonOpenChat.setEnabled(true);
-                textFieldName.setEnabled(false);
+                buttonDisconnect.setEnabled(true);
                 buttonParam.setEnabled(true);
+
+                textFieldName.setEnabled(false);
+                buttonConnect.setEnabled(false);
             }
 
             @Override
@@ -54,6 +62,12 @@ public class MainWindow extends JFrame{
                 comboBoxBits.setSelectedIndex(bits);
                 comboBoxStopBits.setSelectedIndex(stopBits);
                 comboBoxParity.setSelectedIndex(parity);
+
+            }
+
+            @Override
+            public void uiAfterDisconnect() {
+                changeUIAfterDisconnect();
             }
         });
 
@@ -79,10 +93,8 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonDisconnect.addActionListener(e -> {
-
-            status.setText("Отключено");
-            status.setForeground(Color.RED);
-
+            this.viewModel.disconnectAll();
+            changeUIAfterDisconnect();
         });
 
         this.buttonOpenChat.addActionListener(e -> {
@@ -100,7 +112,6 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonParam.addActionListener(e -> {
-            System.out.println(comboBoxStopBits.getSelectedIndex());
             viewModel.setComPortParams(comboBoxSpeed.getSelectedIndex(), comboBoxBits.getSelectedIndex(),
                     comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
         });
@@ -125,6 +136,22 @@ public class MainWindow extends JFrame{
 
         for (Parity param : Parity.values())
             this.comboBoxParity.addItem(param.getStatus());
+    }
+
+    public void changeUIAfterDisconnect(){
+        this.buttonParam.setEnabled(false);
+
+        this.comboBoxPort.setSelectedIndex(0);
+        this.comboBoxPort.setEnabled(true);
+
+        this.status.setText("Отключено");
+        this.status.setForeground(Color.RED);
+
+        this.textFieldName.setText("");
+        this.textFieldName.setEnabled(true);
+
+        this.buttonDisconnect.setEnabled(false);
+        this.buttonOpenChat.setEnabled(false);
     }
 
     //Поток физического соединения

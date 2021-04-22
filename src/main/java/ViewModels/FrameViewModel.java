@@ -1,3 +1,6 @@
+package ViewModels;
+
+import Models.Frame;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -7,7 +10,7 @@ import enums.FrameTypes;
 
 public class FrameViewModel {
 
-    private SerialPort[] ports;
+    private final SerialPort[] ports;
     private MainWindowUI mainWindowUI;
 
     //все последующие поля следует обнулять
@@ -67,6 +70,19 @@ public class FrameViewModel {
         return false;
     }
 
+    public void disconnectAll(){
+        Frame disconnectFrame = new Frame(FrameTypes.UNLINK);
+        port.writeBytes(disconnectFrame.getSupervisorFrameToWrite(),
+                disconnectFrame.getFrameSize());
+        this.sendLogicalConnect = 0;
+        this.userName = "";
+        this.connectedName = "";
+        this.port.removeDataListener();
+        this.port.clearDTR();
+        this.port.closePort();
+        this.port = null;
+    }
+
     public void setLogicalConnection(){
         Frame connectionFrame = new Frame(FrameTypes.LINK);
         port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
@@ -74,9 +90,8 @@ public class FrameViewModel {
         this.sendLogicalConnect = 1;
     }
 
-    private String processFrame(byte[] data){
+    private void processFrame(byte[] data){
         Frame frame = new Frame(data);
-        System.out.println(frame.getType());
         switch(frame.getType()){
             case LINK:
                 System.out.println("LINK");
@@ -87,22 +102,31 @@ public class FrameViewModel {
                     port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
                             connectionFrame.getFrameSize());
                 }
-                return "Подключено";
+                break;
             case ACK:
                 System.out.println("ACK");
-                return "";
+                break;
             case PRM:
                 System.out.println("PRM");
                 getComPortParams(frame);
-                return "";
+                break;
+            case UNLINK:
+                System.out.println("UNLINK");
+                this.sendLogicalConnect = 0;
+                this.userName = "";
+                this.connectedName = "";
+                this.port.removeDataListener();
+                this.port.clearDTR();
+                this.port.closePort();
+                this.port = null;
+                mainWindowUI.uiAfterDisconnect();
+                break;
             default:
-                return "";
+                break;
         }
     }
 
     public void setComPortParams(int speed, int bits, int stopBits, int parity){
-        port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
-
         int params = 0;
         params = (params | speed) << 2;
         params = (params | bits) << 2;
@@ -113,12 +137,12 @@ public class FrameViewModel {
         port.writeBytes(frame.getSupervisorFrameToWrite(),
                 frame.getFrameSize());
 
+        port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
+
     }
 
     public void getComPortParams(Frame frame){
         int params = frame.getData()[0];
-
-        System.out.println(params);
 
         int parity = params & 1;
         int stopBits = (params & 6) >> 1;

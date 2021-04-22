@@ -1,7 +1,7 @@
 
 import java.awt.*;
 
-import com.fazecast.jSerialComm.*;
+import Views.MainWindow;
 
 public class Main {
 

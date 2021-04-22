@@ -2,6 +2,8 @@ package enums;
 
 public enum DataBits {
 
+    //доступно 4 зачения
+
     A (8),
     B (7),
     C (6),
