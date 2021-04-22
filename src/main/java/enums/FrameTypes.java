@@ -1,7 +1,10 @@
+package enums;
+
 public enum FrameTypes {
 
     ACK ((byte)104),
-    LINK ((byte)96);
+    LINK ((byte)96),
+    PRM ((byte)120);
 
     private final byte frameCode;
 
