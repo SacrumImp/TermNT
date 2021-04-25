@@ -35,6 +35,9 @@ public class MainWindow extends JFrame{
 
     public static final Color VERY_DARK_GREEN = new Color(0, 102, 0);
 
+    private SendText sendText;
+    private ReceivedText receivedText;
+
     FrameViewModel viewModel;
 
     public MainWindow(){
@@ -69,6 +72,11 @@ public class MainWindow extends JFrame{
             public void uiAfterDisconnect() {
                 changeUIAfterDisconnect();
             }
+
+            @Override
+            public String setUserName() {
+                return textFieldName.getText();
+            }
         });
 
         this.configureUI();
@@ -99,16 +107,16 @@ public class MainWindow extends JFrame{
 
         this.buttonOpenChat.addActionListener(e -> {
             //открытие окна для отправления сообщений
-            SendText sendText = new SendText();
+            sendText = new SendText(viewModel);
             sendText.setTitle("Исходящие");
             sendText.pack();
             sendText.setVisible(true);
 
             //открытие окна для получения сообщений
-            RecievedText recievedText = new RecievedText();
-            recievedText.setTitle("Входящие");
-            recievedText.pack();
-            recievedText.setVisible(true);
+            receivedText = new ReceivedText(viewModel);
+            receivedText.setTitle("Входящие");
+            receivedText.pack();
+            receivedText.setVisible(true);
         });
 
         this.buttonParam.addActionListener(e -> {
@@ -152,6 +160,9 @@ public class MainWindow extends JFrame{
 
         this.buttonDisconnect.setEnabled(false);
         this.buttonOpenChat.setEnabled(false);
+
+        this.sendText.dispose();
+        this.receivedText.dispose();
     }
 
     //Поток физического соединения

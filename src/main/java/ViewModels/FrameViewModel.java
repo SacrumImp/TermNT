@@ -84,7 +84,7 @@ public class FrameViewModel {
     }
 
     public void setLogicalConnection(){
-        Frame connectionFrame = new Frame(FrameTypes.LINK);
+        Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
         port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
                 connectionFrame.getFrameSize());
         this.sendLogicalConnect = 1;
@@ -96,9 +96,10 @@ public class FrameViewModel {
             case LINK:
                 System.out.println("LINK");
                 this.connectedName = frame.getNameString();
+                this.userName = mainWindowUI.setUserName();
                 mainWindowUI.changeLogicalConnectLabel();
                 if (this.sendLogicalConnect == 0){
-                    Frame connectionFrame = new Frame(FrameTypes.LINK);
+                    Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
                     port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
                             connectionFrame.getFrameSize());
                 }

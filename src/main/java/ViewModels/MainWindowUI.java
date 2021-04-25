@@ -8,4 +8,6 @@ public interface MainWindowUI {
 
     void uiAfterDisconnect();
 
+    String setUserName();
+
 }

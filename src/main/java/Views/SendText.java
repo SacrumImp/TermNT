@@ -1,5 +1,7 @@
 package Views;
 
+import ViewModels.FrameViewModel;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,8 +15,13 @@ public class SendText extends JFrame{
     private javax.swing.JPanel JPanelSend;
     private JTextField messageTextField;
 
-    public SendText() {
+    private FrameViewModel viewModel;
+
+    public SendText(FrameViewModel viewModel) {
         this.getContentPane().add(JPanelSend);
+        this.viewModel = viewModel;
+
+        this.userTextField.setText(this.viewModel.getConnectedName());
 
         this.closeButton.addActionListener(new ActionListener() {
             @Override

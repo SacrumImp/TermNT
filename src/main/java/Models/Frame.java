@@ -2,6 +2,7 @@ package Models;
 
 import enums.FrameTypes;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class Frame {
@@ -25,6 +26,15 @@ public class Frame {
 
     public Frame(FrameTypes type, String data){
         this.type = type;
+        if (data != "") {
+            this.data = data.getBytes(StandardCharsets.UTF_8);
+            this.dataLength = (byte)this.data.length;
+            this.frameSize = this.dataLength + 6;
+        }
+        else {
+            this.dataLength = 0;
+            this.frameSize = 5;
+        }
     }
 
     public Frame(byte[] data){
@@ -84,7 +94,8 @@ public class Frame {
     }
 
     public String getNameString(){
-        return "kek";
+        if (this.dataLength > 0) return new String(this.data, StandardCharsets.UTF_8);
+        else return "";
     }
 
 }
