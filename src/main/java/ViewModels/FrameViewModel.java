@@ -95,7 +95,7 @@ public class FrameViewModel {
         switch(frame.getType()){
             case LINK:
                 System.out.println("LINK");
-                this.connectedName = frame.getDataString();
+                this.connectedName = frame.getNameString();
                 mainWindowUI.changeLogicalConnectLabel();
                 if (this.sendLogicalConnect == 0){
                     Frame connectionFrame = new Frame(FrameTypes.LINK);

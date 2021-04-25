@@ -83,7 +83,7 @@ public class Frame {
         return  frame;
     }
 
-    public String getDataString(){
+    public String getNameString(){
         return "kek";
     }
 
