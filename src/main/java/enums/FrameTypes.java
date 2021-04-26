@@ -11,7 +11,7 @@ public enum FrameTypes {
 
     private final byte frameCode;
 
-    private FrameTypes(byte frameCode){
+    FrameTypes(byte frameCode){
         this.frameCode = frameCode;
     }
 

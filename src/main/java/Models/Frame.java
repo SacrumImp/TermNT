@@ -26,14 +26,21 @@ public class Frame {
 
     public Frame(FrameTypes type, String data){
         this.type = type;
-        if (data != "") {
-            this.data = data.getBytes(StandardCharsets.UTF_8);
-            this.dataLength = (byte)this.data.length;
-            this.frameSize = this.dataLength + 6;
-        }
-        else {
-            this.dataLength = 0;
-            this.frameSize = 5;
+        switch (type) {
+            case LINK:
+                if (!data.equals("")) {
+                    this.data = data.getBytes(StandardCharsets.UTF_8);
+                    this.dataLength = (byte)this.data.length;
+                    this.frameSize = this.dataLength + 6;
+                }
+                else {
+                    this.dataLength = 0;
+                    this.frameSize = 5;
+                }
+                break;
+            case I:
+                //кодирование
+                break;
         }
     }
 

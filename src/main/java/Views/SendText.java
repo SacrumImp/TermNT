@@ -31,6 +31,7 @@ public class SendText extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if (messageTextField.getText() != ""){
                     messageTextArea.append(String.format("<%s>: %s\n", myName, messageTextField.getText()));
+                    viewModel.sendMessage(messageTextField.getText());
                     messageTextField.setText("");
                 }
             }

@@ -117,14 +117,12 @@ public class MainWindow extends JFrame{
             receivedText = new ReceivedText(viewModel);
             receivedText.setTitle("Входящие");
             receivedText.pack();
-            sendText.setSize(500,350);
+            receivedText.setSize(500,200);
             receivedText.setVisible(true);
         });
 
-        this.buttonParam.addActionListener(e -> {
-            viewModel.setComPortParams(comboBoxSpeed.getSelectedIndex(), comboBoxBits.getSelectedIndex(),
-                    comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex());
-        });
+        this.buttonParam.addActionListener(e -> viewModel.setComPortParams(comboBoxSpeed.getSelectedIndex(), comboBoxBits.getSelectedIndex(),
+                comboBoxStopBits.getSelectedIndex(), comboBoxParity.getSelectedIndex()));
 
     }
 
@@ -157,14 +155,13 @@ public class MainWindow extends JFrame{
         this.status.setText("Отключено");
         this.status.setForeground(Color.RED);
 
-        this.textFieldName.setText("");
         this.textFieldName.setEditable(true);
 
         this.buttonDisconnect.setEnabled(false);
         this.buttonOpenChat.setEnabled(false);
 
-        this.sendText.dispose();
-        this.receivedText.dispose();
+        if (this.sendText != null) this.sendText.dispose();
+        if (this.receivedText != null)this.receivedText.dispose();
     }
 
     //Поток физического соединения

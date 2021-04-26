@@ -8,6 +8,9 @@ import enums.Baud;
 import enums.DataBits;
 import enums.FrameTypes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FrameViewModel {
 
     private final SerialPort[] ports;
@@ -155,6 +158,14 @@ public class FrameViewModel {
         port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
         mainWindowUI.changeComPortParams(speed, bits, stopBits, parity);
 
+    }
+
+    public void sendMessage(String text) {
+        text += (char)3;
+        Frame frame;
+        for (int i = 0, j = 11; i < text.length(); i += 11, j += 11) {
+            frame = new Frame(FrameTypes.I, text.substring(i, Math.min(j, text.length())));
+        }
     }
 
 }
