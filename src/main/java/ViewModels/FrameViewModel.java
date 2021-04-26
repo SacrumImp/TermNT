@@ -38,6 +38,8 @@ public class FrameViewModel {
 
     public String getConnectedName() { return this.connectedName; }
 
+    public String getUserName() { return this.userName; }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }

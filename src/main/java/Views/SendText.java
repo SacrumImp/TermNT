@@ -16,12 +16,22 @@ public class SendText extends JFrame{
     private JTextField messageTextField;
 
     private FrameViewModel viewModel;
+    private String myName;
 
     public SendText(FrameViewModel viewModel) {
         this.getContentPane().add(JPanelSend);
         this.viewModel = viewModel;
+        this.myName = this.viewModel.getUserName();
 
         this.userTextField.setText(this.viewModel.getConnectedName());
+
+        this.sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                messageTextArea.append("<{0}>: {1}".formatted(myName, messageTextField));
+                messageTextField.setText("");
+            }
+        });
 
         this.closeButton.addActionListener(new ActionListener() {
             @Override
