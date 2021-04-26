@@ -23,18 +23,9 @@
           </grid>
         </constraints>
         <properties>
-          <editable value="true"/>
-          <enabled value="false"/>
-        </properties>
-      </component>
-      <component id="cf205" class="javax.swing.JTextArea" binding="userTextArea">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
+          <background color="-1"/>
+          <editable value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="7e6d3" class="javax.swing.JButton" binding="closeButton">
@@ -45,6 +36,23 @@
           <text value="Закрыть"/>
         </properties>
       </component>
+      <scrollpane id="5aa6d" binding="scrollPane">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="cf205" class="javax.swing.JTextArea" binding="userTextArea">
+            <constraints/>
+            <properties>
+              <background color="-1"/>
+              <editable value="false"/>
+              <enabled value="true"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

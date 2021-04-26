@@ -55,7 +55,7 @@ public class MainWindow extends JFrame{
                 buttonDisconnect.setEnabled(true);
                 buttonParam.setEnabled(true);
 
-                textFieldName.setEnabled(false);
+                textFieldName.setEditable(false);
                 buttonConnect.setEnabled(false);
             }
 
@@ -110,12 +110,14 @@ public class MainWindow extends JFrame{
             sendText = new SendText(viewModel);
             sendText.setTitle("Исходящие");
             sendText.pack();
+            sendText.setSize(500,350);
             sendText.setVisible(true);
 
             //открытие окна для получения сообщений
             receivedText = new ReceivedText(viewModel);
             receivedText.setTitle("Входящие");
             receivedText.pack();
+            sendText.setSize(500,350);
             receivedText.setVisible(true);
         });
 
@@ -156,7 +158,7 @@ public class MainWindow extends JFrame{
         this.status.setForeground(Color.RED);
 
         this.textFieldName.setText("");
-        this.textFieldName.setEnabled(true);
+        this.textFieldName.setEditable(true);
 
         this.buttonDisconnect.setEnabled(false);
         this.buttonOpenChat.setEnabled(false);

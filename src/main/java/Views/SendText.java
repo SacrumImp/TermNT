@@ -14,6 +14,7 @@ public class SendText extends JFrame{
     private JLabel userLabel;
     private javax.swing.JPanel JPanelSend;
     private JTextField messageTextField;
+    private JScrollPane scrollPane;
 
     private FrameViewModel viewModel;
     private String myName;
@@ -28,8 +29,10 @@ public class SendText extends JFrame{
         this.sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                messageTextArea.append("<{0}>: {1}".formatted(myName, messageTextField));
-                messageTextField.setText("");
+                if (messageTextField.getText() != ""){
+                    messageTextArea.append(String.format("<%s>: %s\n", myName, messageTextField.getText()));
+                    messageTextField.setText("");
+                }
             }
         });
 

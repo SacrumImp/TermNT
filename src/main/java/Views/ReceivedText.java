@@ -12,6 +12,7 @@ public class ReceivedText extends JFrame{
     private JTextArea userTextArea;
     private JButton closeButton;
     private JLabel userLabel;
+    private JScrollPane scrollPane;
 
     private FrameViewModel viewModel;
 
