@@ -160,6 +160,11 @@ public class MainWindow extends JFrame{
         this.buttonDisconnect.setEnabled(false);
         this.buttonOpenChat.setEnabled(false);
 
+        this.comboBoxSpeed.setSelectedIndex(0);
+        this.comboBoxBits.setSelectedIndex(0);
+        this.comboBoxStopBits.setSelectedIndex(0);
+        this.comboBoxParity.setSelectedIndex(0);
+
         if (this.sendText != null) this.sendText.dispose();
         if (this.receivedText != null)this.receivedText.dispose();
     }

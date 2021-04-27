@@ -4,12 +4,9 @@ import Models.Frame;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import enums.Baud;
-import enums.DataBits;
-import enums.FrameTypes;
+import enums.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 public class FrameViewModel {
 
@@ -77,20 +74,23 @@ public class FrameViewModel {
 
     public void disconnectAll(){
         Frame disconnectFrame = new Frame(FrameTypes.UNLINK);
-        port.writeBytes(disconnectFrame.getSupervisorFrameToWrite(),
+        port.writeBytes(disconnectFrame.getFrameToWrite(),
                 disconnectFrame.getFrameSize());
         this.sendLogicalConnect = 0;
         this.userName = "";
         this.connectedName = "";
         this.port.removeDataListener();
         this.port.clearDTR();
+
+        this.port.setComPortParameters(Baud.A.getSpeed(), DataBits.A.getBitsNum(), SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+
         this.port.closePort();
         this.port = null;
     }
 
     public void setLogicalConnection(){
         Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
-        port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
+        port.writeBytes(connectionFrame.getFrameToWrite(),
                 connectionFrame.getFrameSize());
         this.sendLogicalConnect = 1;
     }
@@ -105,7 +105,7 @@ public class FrameViewModel {
                 mainWindowUI.changeLogicalConnectLabel();
                 if (this.sendLogicalConnect == 0){
                     Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
-                    port.writeBytes(connectionFrame.getSupervisorFrameToWrite(),
+                    port.writeBytes(connectionFrame.getFrameToWrite(),
                             connectionFrame.getFrameSize());
                 }
                 break;
@@ -123,6 +123,7 @@ public class FrameViewModel {
                 this.connectedName = "";
                 this.port.removeDataListener();
                 this.port.clearDTR();
+                this.port.setComPortParameters(Baud.A.getSpeed(), DataBits.A.getBitsNum(), SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
                 this.port.closePort();
                 this.port = null;
                 mainWindowUI.uiAfterDisconnect();
@@ -140,7 +141,7 @@ public class FrameViewModel {
         params = params | parity;
 
         Frame frame = new Frame(FrameTypes.PRM, (byte)params);
-        port.writeBytes(frame.getSupervisorFrameToWrite(),
+        port.writeBytes(frame.getFrameToWrite(),
                 frame.getFrameSize());
 
         port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
@@ -162,9 +163,15 @@ public class FrameViewModel {
 
     public void sendMessage(String text) {
         text += (char)3;
+        byte[] data = text.getBytes(StandardCharsets.UTF_16);
+        byte[] subData;
         Frame frame;
-        for (int i = 0, j = 11; i < text.length(); i += 11, j += 11) {
-            frame = new Frame(FrameTypes.I, text.substring(i, Math.min(j, text.length())));
+        for (int i = 0; i < data.length;) {
+            subData = new byte[Math.min(92, data.length - i)];
+            System.arraycopy(data, i, subData, 0, Math.min(92, data.length - i));
+            frame = new Frame(FrameTypes.I, subData);
+            port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+            i += 92;
         }
     }
 

@@ -1,7 +1,9 @@
 package Models;
 
+import Coding.Hamming;
 import enums.FrameTypes;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -26,22 +28,24 @@ public class Frame {
 
     public Frame(FrameTypes type, String data){
         this.type = type;
-        switch (type) {
-            case LINK:
-                if (!data.equals("")) {
-                    this.data = data.getBytes(StandardCharsets.UTF_8);
-                    this.dataLength = (byte)this.data.length;
-                    this.frameSize = this.dataLength + 6;
-                }
-                else {
-                    this.dataLength = 0;
-                    this.frameSize = 5;
-                }
-                break;
-            case I:
-                //кодирование
-                break;
+        if (!data.equals("")) {
+            //имя не должно быть более 127 символов
+            this.data = data.getBytes(StandardCharsets.UTF_16);
+            this.dataLength = (byte)this.data.length;
+            this.frameSize = this.dataLength + 6;
         }
+        else {
+            this.dataLength = 0;
+            this.frameSize = 5;
+        }
+    }
+
+    public Frame(FrameTypes type, byte[] data){
+        this.type = type;
+        Hamming hamming = new Hamming(data);
+        this.data = hamming.encode();
+        this.dataLength = (byte)this.data.length;
+        this.frameSize = 6 + this.dataLength;
     }
 
     public Frame(byte[] data){
@@ -74,7 +78,7 @@ public class Frame {
         return data;
     }
 
-    public byte[] getSupervisorFrameToWrite(){
+    public byte[] getFrameToWrite(){
         byte[] frame;
 
         if (this.dataLength == 0){
@@ -101,7 +105,7 @@ public class Frame {
     }
 
     public String getNameString(){
-        if (this.dataLength > 0) return new String(this.data, StandardCharsets.UTF_8);
+        if (this.dataLength > 0) return new String(this.data, StandardCharsets.UTF_16);
         else return "";
     }
 
