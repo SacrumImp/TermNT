@@ -92,6 +92,10 @@ public class Hamming {
                 }
             }
         }
+        que.add(first);
+        que.add(second);
+        que.add(fourth);
+        que.add(eighth);
 
         byte[] result = new byte[(int)Math.ceil(15.0*(double)data.length/11.0)];
         index = 0;
@@ -103,7 +107,7 @@ public class Hamming {
                 switch (index) {
                     case 0, 1, 3, 7 -> result[i] |= ((que.peekFirst() != null) ? que.pollFirst() : 0) << (7 - j);
                     default -> {
-                        if (k < data.length) result[i] |= (data[k] & (1 << (7 - n))) << (n-j);
+                        if (k < data.length) result[i] |= ((data[k] & (1 << (7 - n))) >> (7 - n)) << (7 - j);
                         else return result;
                         if (n != 7) n++;
                         else {
