@@ -43,7 +43,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="cf205" class="javax.swing.JTextArea" binding="userTextArea">
+          <component id="cf205" class="javax.swing.JTextArea" binding="messageTextArea">
             <constraints/>
             <properties>
               <background color="-1"/>

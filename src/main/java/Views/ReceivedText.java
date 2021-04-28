@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 public class ReceivedText extends JFrame{
     private javax.swing.JPanel JPanelReceived;
     private JTextField userTextField;
-    private JTextArea userTextArea;
+    private JTextArea messageTextArea;
     private JButton closeButton;
     private JLabel userLabel;
     private JScrollPane scrollPane;
@@ -21,6 +21,13 @@ public class ReceivedText extends JFrame{
         this.viewModel = viewModel;
 
         this.userTextField.setText(this.viewModel.getConnectedName());
+
+        this.viewModel.setReceivedMessageUIInterface(new ReceivedMessageUI() {
+            @Override
+            public void addReceivedMessage(String text) {
+                messageTextArea.append(String.format("<%s>: %s\n", viewModel.getConnectedName(), text));
+            }
+        });
 
         this.closeButton.addActionListener(new ActionListener() {
             @Override
