@@ -1,6 +1,9 @@
 package ViewModels;
 
+import Coding.Hamming;
 import Models.Frame;
+import Views.MainWindowUI;
+import Views.ReceivedMessageUI;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -11,7 +14,10 @@ import java.nio.charset.StandardCharsets;
 public class FrameViewModel {
 
     private final SerialPort[] ports;
+
+    //интерфейсы
     private MainWindowUI mainWindowUI;
+    private ReceivedMessageUI receivedMessageUI;
 
     //все последующие поля следует обнулять
     private SerialPort port = null;
@@ -19,6 +25,8 @@ public class FrameViewModel {
     private String connectedName = "";
     //флаги
     private int sendLogicalConnect = 0;
+    //строка буфер
+    private String message = "";
 
     public FrameViewModel(){
         ports = SerialPort.getCommPorts();
@@ -45,6 +53,7 @@ public class FrameViewModel {
     }
 
     public void setMainWindowUIInterface(MainWindowUI uiInterface){ this.mainWindowUI = uiInterface; }
+    public void setReceivedMessageUIInterface(ReceivedMessageUI uiInterface){ this.receivedMessageUI = uiInterface; }
 
     public boolean setPhysicalConnection(){
         long end = System.currentTimeMillis() + 5000;
@@ -128,6 +137,23 @@ public class FrameViewModel {
                 this.port = null;
                 mainWindowUI.uiAfterDisconnect();
                 break;
+            case I:
+                System.out.println("I");
+                Hamming inputFrame = new Hamming(frame.getData());
+                if (!inputFrame.decode()){
+                    sendErrorFrame();
+                    break;
+                }
+                message += new String(inputFrame.getData(), StandardCharsets.UTF_16);
+                if (inputFrame.isEnd()){
+                    receivedMessageUI.addReceivedMessage(message);
+                    message = "";
+                }
+                break;
+            case RET:
+                System.out.println("RET");
+
+                break;
             default:
                 break;
         }
@@ -156,7 +182,8 @@ public class FrameViewModel {
         int bits = (params & 24) >> 3;
         int speed = (params & 224) >> 5;
 
-        port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
+        port.setComPortParameters(Baud.values()[speed].getSpeed(),
+                DataBits.values()[bits].getBitsNum(), stopBits, parity);
         mainWindowUI.changeComPortParams(speed, bits, stopBits, parity);
 
     }
@@ -173,6 +200,11 @@ public class FrameViewModel {
             port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
             i += 92;
         }
+    }
+
+    public void sendErrorFrame(){
+        Frame frame = new Frame(FrameTypes.RET);
+        port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
     }
 
 }
