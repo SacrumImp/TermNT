@@ -1,4 +1,7 @@
 package Views;
 
-public interface SendMessageUI {
+public interface ReceivedMessageUI {
+
+    void addReceivedMessage(String text);
+
 }

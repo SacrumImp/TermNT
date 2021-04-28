@@ -1,4 +1,4 @@
-package ViewModels;
+package Views;
 
 public interface MainWindowUI {
 
