@@ -2,12 +2,13 @@ package enums;
 
 public enum FrameTypes {
 
-    //доступно 4 значения
+    //код должен быть меньше 127
     ACK ((byte)104),
     LINK ((byte)96),
     UNLINK ((byte)97),
     PRM ((byte)120),
-    I ((byte)111);
+    I ((byte)111),
+    RET ((byte)115);
 
     private final byte frameCode;
 

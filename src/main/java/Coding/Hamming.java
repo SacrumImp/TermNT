@@ -152,7 +152,9 @@ public class Hamming {
                 if ((index & 8) == 8) fourth ^= 1;
 
                 if ((index != 1) & (index != 2) & (index != 4) & (index != 8)){
-                    resultByte |= ((data[i] ^ 1 << (7 - j)) >> (7 - j)) << (7 - indResult);
+                    resultByte |= ((data[i] & (1 << (7 - j))) >> (7 - j)) << (7 - indResult);
+                    if (indResult != 7) indResult++;
+                    else indResult = 0;
                 }
 
                 if (index != 15) index++;

@@ -1,7 +1,6 @@
 package Views;
 
 import ViewModels.FrameViewModel;
-import ViewModels.MainWindowUI;
 import com.fazecast.jSerialComm.SerialPort;
 import enums.Baud;
 import enums.DataBits;
