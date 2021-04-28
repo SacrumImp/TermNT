@@ -139,7 +139,7 @@ public class Hamming {
         int third = 0;
         int fourth = 0;
 
-        byte[] result = new byte[11 * (data.length/15)];
+        byte[] result = new byte[11 * data.length / 15];
         byte resultByte = 0;
         int numByteResult = 0;
         int indResult = 0;
@@ -154,7 +154,12 @@ public class Hamming {
                 if ((index != 1) & (index != 2) & (index != 4) & (index != 8)){
                     resultByte |= ((data[i] & (1 << (7 - j))) >> (7 - j)) << (7 - indResult);
                     if (indResult != 7) indResult++;
-                    else indResult = 0;
+                    else {
+                        indResult = 0;
+                        result[numByteResult] = resultByte;
+                        numByteResult++;
+                        resultByte = 0;
+                    }
                 }
 
                 if (index != 15) index++;
@@ -163,10 +168,6 @@ public class Hamming {
                     if ((first + second + third + fourth) != 0){
                         return false;
                     }
-
-                    result[numByteResult] = resultByte;
-                    numByteResult++;
-                    resultByte = 0;
 
                     first = 0;
                     second = 0;

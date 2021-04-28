@@ -33,9 +33,12 @@ public class ReceivedText extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                dispose();
             }
         });
+    }
+
+    public void cleanArea(){
+        this.messageTextArea.setText("");
     }
 
 }

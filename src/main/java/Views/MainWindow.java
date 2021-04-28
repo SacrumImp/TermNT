@@ -106,18 +106,24 @@ public class MainWindow extends JFrame{
 
         this.buttonOpenChat.addActionListener(e -> {
             //открытие окна для отправления сообщений
-            sendText = new SendText(viewModel);
-            sendText.setTitle("Исходящие");
-            sendText.pack();
-            sendText.setSize(500,350);
-            sendText.setVisible(true);
+            if (this.sendText != null) this.sendText.setVisible(true);
+            else{
+                sendText = new SendText(viewModel);
+                sendText.setTitle("Исходящие");
+                sendText.pack();
+                sendText.setSize(500,350);
+                sendText.setVisible(true);
+            }
 
             //открытие окна для получения сообщений
-            receivedText = new ReceivedText(viewModel);
-            receivedText.setTitle("Входящие");
-            receivedText.pack();
-            receivedText.setSize(500,200);
-            receivedText.setVisible(true);
+            if (this.receivedText != null) this.receivedText.setVisible(true);
+            else{
+                receivedText = new ReceivedText(viewModel);
+                receivedText.setTitle("Входящие");
+                receivedText.pack();
+                receivedText.setSize(500,300);
+                receivedText.setVisible(true);
+            }
         });
 
         this.buttonParam.addActionListener(e -> viewModel.setComPortParams(comboBoxSpeed.getSelectedIndex(), comboBoxBits.getSelectedIndex(),
@@ -164,8 +170,14 @@ public class MainWindow extends JFrame{
         this.comboBoxStopBits.setSelectedIndex(0);
         this.comboBoxParity.setSelectedIndex(0);
 
-        if (this.sendText != null) this.sendText.dispose();
-        if (this.receivedText != null)this.receivedText.dispose();
+        if (this.sendText != null){
+            this.sendText.cleanArea();
+            this.sendText.setVisible(false);
+        }
+        if (this.receivedText != null){
+            this.receivedText.cleanArea();
+            this.receivedText.setVisible(false);
+        }
     }
 
     //Поток физического соединения

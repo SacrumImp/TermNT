@@ -146,7 +146,7 @@ public class FrameViewModel {
                 }
                 message += new String(inputFrame.getData(), StandardCharsets.UTF_16);
                 if (inputFrame.isEnd()){
-                    receivedMessageUI.addReceivedMessage(message);
+                    receivedMessageUI.addReceivedMessage(message.substring(0, message.length() - 1));
                     message = "";
                 }
                 break;
