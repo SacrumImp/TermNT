@@ -10,10 +10,14 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import enums.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 
 public class FrameViewModel {
 
     private final SerialPort[] ports;
+
+    //очередь фреймов I
+    ArrayDeque<Frame> infoFramesQueue = new ArrayDeque<>();
 
     //интерфейсы
     private MainWindowUI mainWindowUI;
@@ -89,11 +93,10 @@ public class FrameViewModel {
         this.userName = "";
         this.connectedName = "";
         this.port.removeDataListener();
-        this.port.clearDTR();
-
         this.port.setComPortParameters(Baud.A.getSpeed(), DataBits.A.getBitsNum(), SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-
+        this.port.clearDTR();
         this.port.closePort();
+
         this.port = null;
     }
 
@@ -120,6 +123,9 @@ public class FrameViewModel {
                 break;
             case ACK:
                 System.out.println("ACK");
+                infoFramesQueue.pollFirst();
+                frame = infoFramesQueue.peekFirst();
+                if (frame != null) port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
                 break;
             case PRM:
                 System.out.println("PRM");
@@ -149,10 +155,12 @@ public class FrameViewModel {
                     receivedMessageUI.addReceivedMessage(message.substring(0, message.length() - 1));
                     message = "";
                 }
+                sendSuccessFrame();
                 break;
             case RET:
                 System.out.println("RET");
-
+                frame = infoFramesQueue.peekFirst();
+                port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
                 break;
             default:
                 break;
@@ -197,13 +205,20 @@ public class FrameViewModel {
             subData = new byte[Math.min(92, data.length - i)];
             System.arraycopy(data, i, subData, 0, Math.min(92, data.length - i));
             frame = new Frame(FrameTypes.I, subData);
-            port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+            infoFramesQueue.add(frame);
             i += 92;
         }
+        frame = infoFramesQueue.peekFirst();
+        port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
     }
 
     public void sendErrorFrame(){
         Frame frame = new Frame(FrameTypes.RET);
+        port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+    }
+
+    public void sendSuccessFrame(){
+        Frame frame = new Frame(FrameTypes.ACK);
         port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
     }
 
