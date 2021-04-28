@@ -27,8 +27,11 @@ public class FrameViewModel {
     private SerialPort port = null;
     private String userName = "";
     private String connectedName = "";
+
     //флаги
-    private int sendLogicalConnect = 0;
+    private boolean sendLogicalConnect = false;
+    private byte numOfRet = 0;
+
     //строка буфер
     private String message = "";
 
@@ -89,7 +92,7 @@ public class FrameViewModel {
         Frame disconnectFrame = new Frame(FrameTypes.UNLINK);
         port.writeBytes(disconnectFrame.getFrameToWrite(),
                 disconnectFrame.getFrameSize());
-        this.sendLogicalConnect = 0;
+        this.sendLogicalConnect = false;
         this.userName = "";
         this.connectedName = "";
         this.port.removeDataListener();
@@ -104,7 +107,7 @@ public class FrameViewModel {
         Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
         port.writeBytes(connectionFrame.getFrameToWrite(),
                 connectionFrame.getFrameSize());
-        this.sendLogicalConnect = 1;
+        this.sendLogicalConnect = true;
     }
 
     private void processFrame(byte[] data){
@@ -115,7 +118,7 @@ public class FrameViewModel {
                 this.connectedName = frame.getNameString();
                 this.userName = mainWindowUI.setUserName();
                 mainWindowUI.changeLogicalConnectLabel();
-                if (this.sendLogicalConnect == 0){
+                if (!this.sendLogicalConnect){
                     Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
                     port.writeBytes(connectionFrame.getFrameToWrite(),
                             connectionFrame.getFrameSize());
@@ -123,6 +126,7 @@ public class FrameViewModel {
                 break;
             case ACK:
                 System.out.println("ACK");
+                this.numOfRet = 0;
                 infoFramesQueue.pollFirst();
                 frame = infoFramesQueue.peekFirst();
                 if (frame != null) port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
@@ -133,7 +137,7 @@ public class FrameViewModel {
                 break;
             case UNLINK:
                 System.out.println("UNLINK");
-                this.sendLogicalConnect = 0;
+                this.sendLogicalConnect = false;
                 this.userName = "";
                 this.connectedName = "";
                 this.port.removeDataListener();
@@ -159,8 +163,23 @@ public class FrameViewModel {
                 break;
             case RET:
                 System.out.println("RET");
-                frame = infoFramesQueue.peekFirst();
-                port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+                this.numOfRet += 1;
+                if (numOfRet < 15){
+                    frame = infoFramesQueue.peekFirst();
+                    port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+                }
+                else {
+                    System.out.println("UNLINK");
+                    this.sendLogicalConnect = false;
+                    this.userName = "";
+                    this.connectedName = "";
+                    this.port.removeDataListener();
+                    this.port.clearDTR();
+                    this.port.setComPortParameters(Baud.A.getSpeed(), DataBits.A.getBitsNum(), SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+                    this.port.closePort();
+                    this.port = null;
+                    mainWindowUI.uiAfterDisconnect();
+                }
                 break;
             default:
                 break;
