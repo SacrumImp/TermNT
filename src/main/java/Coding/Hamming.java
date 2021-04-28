@@ -1,7 +1,6 @@
 package Coding;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 
 public class Hamming {
 
@@ -144,15 +143,15 @@ public class Hamming {
         int numByteResult = 0;
         int indResult = 0;
 
-        for(int i = 0; i < data.length; i++){
-            for(int j = 0; j < 8; j++){
+        for (byte datum : data) {
+            for (int j = 0; j < 8; j++) {
                 if ((index & 1) == 1) first ^= 1;
                 if ((index & 2) == 2) second ^= 1;
                 if ((index & 4) == 4) third ^= 1;
                 if ((index & 8) == 8) fourth ^= 1;
 
-                if ((index != 1) & (index != 2) & (index != 4) & (index != 8)){
-                    resultByte |= ((data[i] & (1 << (7 - j))) >> (7 - j)) << (7 - indResult);
+                if ((index != 1) & (index != 2) & (index != 4) & (index != 8)) {
+                    resultByte |= ((datum & (1 << (7 - j))) >> (7 - j)) << (7 - indResult);
                     if (indResult != 7) indResult++;
                     else {
                         indResult = 0;
@@ -165,7 +164,7 @@ public class Hamming {
                 if (index != 15) index++;
                 else {
                     index = 1;
-                    if ((first + second + third + fourth) != 0){
+                    if ((first + second + third + fourth) != 0) {
                         return false;
                     }
 

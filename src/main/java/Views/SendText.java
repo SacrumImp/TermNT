@@ -3,8 +3,6 @@ package Views;
 import ViewModels.FrameViewModel;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class SendText extends JFrame{
     private JTextField userTextField;
@@ -16,33 +14,23 @@ public class SendText extends JFrame{
     private JTextField messageTextField;
     private JScrollPane scrollPane;
 
-    private FrameViewModel viewModel;
-    private String myName;
+    private final String myName;
 
     public SendText(FrameViewModel viewModel) {
         this.getContentPane().add(JPanelSend);
-        this.viewModel = viewModel;
-        this.myName = this.viewModel.getUserName();
+        this.myName = viewModel.getUserName();
 
-        this.userTextField.setText(this.viewModel.getConnectedName());
+        this.userTextField.setText(viewModel.getConnectedName());
 
-        this.sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (messageTextField.getText() != ""){
-                    messageTextArea.append(String.format("<%s>: %s\n", myName, messageTextField.getText()));
-                    viewModel.sendMessage(messageTextField.getText());
-                    messageTextField.setText("");
-                }
+        this.sendButton.addActionListener(e -> {
+            if (!messageTextField.getText().equals("")){
+                messageTextArea.append(String.format("<%s>: %s\n", myName, messageTextField.getText()));
+                viewModel.sendMessage(messageTextField.getText());
+                messageTextField.setText("");
             }
         });
 
-        this.closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        this.closeButton.addActionListener(e -> setVisible(false));
     }
 
     public void cleanArea(){

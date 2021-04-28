@@ -90,8 +90,11 @@ public class FrameViewModel {
 
     public void disconnectAll(){
         Frame disconnectFrame = new Frame(FrameTypes.UNLINK);
-        port.writeBytes(disconnectFrame.getFrameToWrite(),
-                disconnectFrame.getFrameSize());
+        write(disconnectFrame);
+        disconnectChanges();
+    }
+
+    public void disconnectChanges(){
         this.sendLogicalConnect = false;
         this.userName = "";
         this.connectedName = "";
@@ -99,14 +102,12 @@ public class FrameViewModel {
         this.port.setComPortParameters(Baud.A.getSpeed(), DataBits.A.getBitsNum(), SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         this.port.clearDTR();
         this.port.closePort();
-
         this.port = null;
     }
 
     public void setLogicalConnection(){
         Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
-        port.writeBytes(connectionFrame.getFrameToWrite(),
-                connectionFrame.getFrameSize());
+        write(connectionFrame);
         this.sendLogicalConnect = true;
     }
 
@@ -120,8 +121,7 @@ public class FrameViewModel {
                 mainWindowUI.changeLogicalConnectLabel();
                 if (!this.sendLogicalConnect){
                     Frame connectionFrame = new Frame(FrameTypes.LINK, this.userName);
-                    port.writeBytes(connectionFrame.getFrameToWrite(),
-                            connectionFrame.getFrameSize());
+                    write(connectionFrame);
                 }
                 break;
             case ACK:
@@ -129,7 +129,7 @@ public class FrameViewModel {
                 this.numOfRet = 0;
                 infoFramesQueue.pollFirst();
                 frame = infoFramesQueue.peekFirst();
-                if (frame != null) port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+                if (frame != null) write(frame);
                 break;
             case PRM:
                 System.out.println("PRM");
@@ -137,14 +137,7 @@ public class FrameViewModel {
                 break;
             case UNLINK:
                 System.out.println("UNLINK");
-                this.sendLogicalConnect = false;
-                this.userName = "";
-                this.connectedName = "";
-                this.port.removeDataListener();
-                this.port.clearDTR();
-                this.port.setComPortParameters(Baud.A.getSpeed(), DataBits.A.getBitsNum(), SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-                this.port.closePort();
-                this.port = null;
+                disconnectChanges();
                 mainWindowUI.uiAfterDisconnect();
                 break;
             case I:
@@ -166,7 +159,7 @@ public class FrameViewModel {
                 this.numOfRet += 1;
                 if (numOfRet < 15){
                     frame = infoFramesQueue.peekFirst();
-                    port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+                    if (frame != null) write(frame);
                 }
                 else {
                     System.out.println("UNLINK");
@@ -193,12 +186,10 @@ public class FrameViewModel {
         params = (params | stopBits) << 1;
         params = params | parity;
 
-        Frame frame = new Frame(FrameTypes.PRM, (byte)params);
-        port.writeBytes(frame.getFrameToWrite(),
-                frame.getFrameSize());
-
         port.setComPortParameters(Baud.values()[speed].getSpeed(), DataBits.values()[bits].getBitsNum(), stopBits, parity);
 
+        Frame frame = new Frame(FrameTypes.PRM, (byte)params);
+        write(frame);
     }
 
     public void getComPortParams(Frame frame){
@@ -228,17 +219,27 @@ public class FrameViewModel {
             i += 92;
         }
         frame = infoFramesQueue.peekFirst();
-        port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+        if (frame != null) write(frame);
     }
 
     public void sendErrorFrame(){
         Frame frame = new Frame(FrameTypes.RET);
-        port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+        write(frame);
     }
 
     public void sendSuccessFrame(){
         Frame frame = new Frame(FrameTypes.ACK);
-        port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+        write(frame);
+    }
+
+    public void write(Frame frame) {
+        if (port.getDSR()){
+            port.writeBytes(frame.getFrameToWrite(), frame.getFrameSize());
+        }
+        else{
+            disconnectChanges();
+            mainWindowUI.uiAfterDisconnect();
+        }
     }
 
 }

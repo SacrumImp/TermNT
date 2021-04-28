@@ -3,7 +3,6 @@ package Models;
 import Coding.Hamming;
 import enums.FrameTypes;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -11,7 +10,7 @@ public class Frame {
 
     private FrameTypes type;
     private byte[] data;
-    private byte dataLength;
+    private final byte dataLength;
     private int frameSize;
 
     public Frame(FrameTypes type){

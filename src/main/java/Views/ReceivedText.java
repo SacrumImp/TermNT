@@ -3,8 +3,6 @@ package Views;
 import ViewModels.FrameViewModel;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ReceivedText extends JFrame{
     private javax.swing.JPanel JPanelReceived;
@@ -18,23 +16,12 @@ public class ReceivedText extends JFrame{
 
     public ReceivedText(FrameViewModel viewModel) {
         this.getContentPane().add(JPanelReceived);
-        this.viewModel = viewModel;
 
-        this.userTextField.setText(this.viewModel.getConnectedName());
+        this.userTextField.setText(viewModel.getConnectedName());
 
-        this.viewModel.setReceivedMessageUIInterface(new ReceivedMessageUI() {
-            @Override
-            public void addReceivedMessage(String text) {
-                messageTextArea.append(String.format("<%s>: %s\n", viewModel.getConnectedName(), text));
-            }
-        });
+        viewModel.setReceivedMessageUIInterface(text -> messageTextArea.append(String.format("<%s>: %s\n", viewModel.getConnectedName(), text)));
 
-        this.closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        this.closeButton.addActionListener(e -> setVisible(false));
     }
 
     public void cleanArea(){
