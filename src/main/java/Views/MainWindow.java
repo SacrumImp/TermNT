@@ -33,6 +33,7 @@ public class MainWindow extends JFrame{
     private JButton buttonParam;
 
     public static final Color VERY_DARK_GREEN = new Color(0, 102, 0);
+    public static final Color VERY_DARK_RED = new Color(187, 0, 0);
 
     private SendText sendText;
     private ReceivedText receivedText;
@@ -56,6 +57,16 @@ public class MainWindow extends JFrame{
 
                 textFieldName.setEditable(false);
                 buttonConnect.setEnabled(false);
+
+                sendText = new SendText(viewModel);
+                sendText.setTitle("Исходящие");
+                sendText.pack();
+                sendText.setSize(500,350);
+
+                receivedText = new ReceivedText(viewModel);
+                receivedText.setTitle("Входящие");
+                receivedText.pack();
+                receivedText.setSize(500,300);
             }
 
             @Override
@@ -105,25 +116,8 @@ public class MainWindow extends JFrame{
         });
 
         this.buttonOpenChat.addActionListener(e -> {
-            //открытие окна для отправления сообщений
-            if (this.sendText != null) this.sendText.setVisible(true);
-            else{
-                sendText = new SendText(viewModel);
-                sendText.setTitle("Исходящие");
-                sendText.pack();
-                sendText.setSize(500,350);
-                sendText.setVisible(true);
-            }
-
-            //открытие окна для получения сообщений
-            if (this.receivedText != null) this.receivedText.setVisible(true);
-            else{
-                receivedText = new ReceivedText(viewModel);
-                receivedText.setTitle("Входящие");
-                receivedText.pack();
-                receivedText.setSize(500,300);
-                receivedText.setVisible(true);
-            }
+            this.sendText.setVisible(true);
+            this.receivedText.setVisible(true);
         });
 
         this.buttonParam.addActionListener(e -> viewModel.setComPortParams(comboBoxSpeed.getSelectedIndex(), comboBoxBits.getSelectedIndex(),
@@ -158,7 +152,7 @@ public class MainWindow extends JFrame{
         this.comboBoxPort.setEnabled(true);
 
         this.status.setText("Отключено");
-        this.status.setForeground(Color.RED);
+        this.status.setForeground(VERY_DARK_RED);
 
         this.textFieldName.setEditable(true);
 
