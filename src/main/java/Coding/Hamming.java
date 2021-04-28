@@ -1,13 +1,18 @@
 package Coding;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 public class Hamming {
 
-    private final byte[] data;
+    private byte[] data;
 
     public Hamming(byte[] data){
         this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     public byte[] encode() {
@@ -121,6 +126,55 @@ public class Hamming {
             }
         }
         return result;
+    }
+
+    public boolean isEnd() {
+        return (this.data[this.data.length - 1] == 3) & (this.data[this.data.length - 2] == 0);
+    }
+
+    public boolean decode(){
+        int index = 1;
+        int first = 0;
+        int second = 0;
+        int third = 0;
+        int fourth = 0;
+
+        byte[] result = new byte[11 * (data.length/15)];
+        byte resultByte = 0;
+        int numByteResult = 0;
+        int indResult = 0;
+
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; j < 8; j++){
+                if ((index & 1) == 1) first ^= 1;
+                if ((index & 2) == 2) second ^= 1;
+                if ((index & 4) == 4) third ^= 1;
+                if ((index & 8) == 8) fourth ^= 1;
+
+                if ((index != 1) & (index != 2) & (index != 4) & (index != 8)){
+                    resultByte |= ((data[i] ^ 1 << (7 - j)) >> (7 - j)) << (7 - indResult);
+                }
+
+                if (index != 15) index++;
+                else {
+                    index = 1;
+                    if ((first + second + third + fourth) != 0){
+                        return false;
+                    }
+
+                    result[numByteResult] = resultByte;
+                    numByteResult++;
+                    resultByte = 0;
+
+                    first = 0;
+                    second = 0;
+                    third = 0;
+                    fourth = 0;
+                }
+            }
+        }
+        this.data = result;
+        return true;
     }
 
 }
